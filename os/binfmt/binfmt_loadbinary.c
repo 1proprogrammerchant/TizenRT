@@ -136,6 +136,9 @@ int load_binary(int binary_idx, FAR const char *filename, load_attr_t *load_attr
 				bin->filelen = load_attr->bin_size;
 				bin->offset = load_attr->offset;
 				bin->bin_ver = load_attr->bin_ver;
+#ifdef CONFIG_HAVE_CXX
+				bin->run_library_ctors = true;
+#endif
 				g_lib_binp = bin;
 			} else
 #endif
@@ -177,8 +180,9 @@ int load_binary(int binary_idx, FAR const char *filename, load_attr_t *load_attr
 #endif
 
 	elf_save_bin_section_addr(bin);
+#ifdef CONFIG_ARM_MPU
 	binfmt_set_mpu(bin);
-
+#endif
 #ifdef CONFIG_SUPPORT_COMMON_BINARY
 	if (bin->islibrary) {
 		g_umm_app_id = (uint32_t *)(bin->sections[BIN_DATA] + 4);

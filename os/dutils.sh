@@ -48,7 +48,7 @@ fi
 # check docker image and pull docker image
 function GET_SPECIFIC_DOCKER_IMAGE()
 {
-	# check existed docker image for specified version
+	# check existing docker image for specified version
 	echo "Check Docker Image"
 	DOCKER_IMAGES=`docker images | grep 'tizenrt' | awk '{print $1":"$2}'`
 	for im in ${DOCKER_IMAGES}; do
@@ -70,7 +70,7 @@ function GET_SPECIFIC_DOCKER_IMAGE()
 			DOCKER_IMAGE=$DOCKER_PUBLIC_IMAGE
 			return
 		fi
-		echo "fail to pull docker image: ${DOCKER_PUBLIC_IMAGE}:${DOCKER_VERSION}"
+		echo "failed to pull docker image: ${DOCKER_PUBLIC_IMAGE}:${DOCKER_VERSION}"
 		# Can add other docker image
 		exit 1
 	fi
@@ -78,14 +78,21 @@ function GET_SPECIFIC_DOCKER_IMAGE()
 
 
 KERNEL_DBG_BIN=
-APP1_DBG_BIN=
-APP2_DBG_BIN=
-CMN_DBG_BIN=
+APP1_DBG_BIN=app1_dbg
+APP2_DBG_BIN=app2_dbg
+CMN_DBG_BIN=common_dbg
 function FIND_DBGBINFILE()
 {
-	APP1_DBG_BIN="app1_dbg"
-	APP2_DBG_BIN="app2_dbg"
-	CMN_DBG_BIN="common_dbg"
+	source $CONFIGFILE
+	if [ ! -z $CONFIG_APP1_BIN_NAME ]; then
+		APP1_DBG_BIN="${CONFIG_APP1_BIN_NAME}_dbg"
+	fi
+	if [ ! -z $CONFIG_APP2_BIN_NAME ]; then
+		APP2_DBG_BIN="${CONFIG_APP2_BIN_NAME}_dbg"
+	fi
+	if [ ! -z $CONFIG_COMMON_BINARY_NAME ]; then
+		CMN_DBG_BIN="${CONFIG_COMMON_BINARY_NAME}_dbg"
+	fi
 
 	make -C "tools" -f Makefile.export TOPDIR=".." EXPORTDIR=".."
 	source "./makeinfo.sh"

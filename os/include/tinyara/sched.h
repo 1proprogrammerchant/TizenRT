@@ -170,7 +170,8 @@
  #  define TCB_FLAG_SCHED_OTHER     (3 << TCB_FLAG_POLICY_SHIFT) /* Other scheding policy */
 #define TCB_FLAG_CPU_LOCKED        (1 << 7) /* Bit 7: Locked to this CPU */
 #define TCB_FLAG_EXIT_PROCESSING   (1 << 8) /* Bit 8: Exitting */
-											/* Bits 9-15: Available */
+#define TCB_FLAG_SYSCALL           (1 << 10)                     /* Bit 9: In a system call */
+/* Bits 11-15: Available */
 
 /* Values for struct task_group tg_flags */
 
@@ -319,6 +320,21 @@ struct dspace_s {
 	FAR uint8_t *region;
 };
 #endif
+
+/* struct stackinfo_s *******************************************************/
+
+/* Used to report stack information */
+
+struct stackinfo_s {
+	size_t    adj_stack_size;	/* Stack size after adjustment         */
+					/* for hardware, processor, etc.       */
+					/* (for debug purposes only)           */
+	FAR void *stack_alloc_ptr;	/* Pointer to allocated stack          */
+					/* Needed to deallocate stack          */
+	FAR void *stack_base_ptr;	/* Adjusted initial stack pointer      */
+					/* after the frame has been removed    */
+					/* from the stack.                     */
+};
 
 /* struct task_group_s ***********************************************************/
 /* All threads created by pthread_create belong in the same task group (along with
@@ -570,6 +586,8 @@ struct tcb_s {
 	FAR void *stack_alloc_ptr;	/* Pointer to allocated stack          */
 	/* Need to deallocate stack            */
 	FAR void *adj_stack_ptr;	/* Adjusted stack_alloc_ptr for HW     */
+	FAR void *stack_base_ptr;              /* Adjusted initial stack pointer  */
+
 	/* The initial stack pointer value     */
 
 #ifdef CONFIG_MPU_STACKGUARD
